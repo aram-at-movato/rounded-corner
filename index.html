@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rounded Corners POC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .value-display {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #764ba2;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            background: #764ba2;
+        }
+
+        .demo-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .parent-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 100%;
+            height: 500px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .child-element {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .child-element::before {
+            content: attr(data-radius);
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .formula h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .formula code {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .formula p {
+            color: #666;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .parent-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Rounded Corners POC</h1>
+        <p>Interactive demonstration of nested border-radius calculations</p>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>
+                <span>Parent Border Radius</span>
+                <span class="value-display" id="parentRadiusValue">32px</span>
+            </label>
+            <input type="range" id="parentRadius" min="0" max="100" value="32" step="1">
+        </div>
+
+        <div class="control-group">
+            <label>
+                <span>Padding (Gap)</span>
+                <span class="value-display" id="paddingValue">16px</span>
+            </label>
+            <input type="range" id="padding" min="0" max="50" value="16" step="1">
+        </div>
+
+        <div class="formula">
+            <h3>Formula</h3>
+            <p>
+                <code>child_radius = max(0, parent_radius - padding)</code>
+            </p>
+            <p>
+                This creates a smooth, continuous visual flow from the outer container to the inner elements.
+            </p>
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <div class="parent-container" id="parentContainer">
+            <div class="child-element" data-radius="16px">
+                <span>Child 1</span>
+            </div>
+            <div class="child-element" data-radius="16px">
+                <span>Child 2</span>
+            </div>
+            <div class="child-element" data-radius="16px">
+                <span>Child 3</span>
+            </div>
+            <div class="child-element" data-radius="16px">
+                <span>Child 4</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const parentRadiusInput = document.getElementById('parentRadius');
+        const paddingInput = document.getElementById('padding');
+        const parentRadiusValue = document.getElementById('parentRadiusValue');
+        const paddingValue = document.getElementById('paddingValue');
+        const parentContainer = document.getElementById('parentContainer');
+        const childElements = document.querySelectorAll('.child-element');
+
+        function updateStyles() {
+            const parentRadius = parseInt(parentRadiusInput.value);
+            const padding = parseInt(paddingInput.value);
+            
+            // Calculate child radius: parent_radius - padding (but not less than 0)
+            const childRadius = Math.max(0, parentRadius - padding);
+            
+            // Update display values
+            parentRadiusValue.textContent = `${parentRadius}px`;
+            paddingValue.textContent = `${padding}px`;
+            
+            // Apply styles to parent
+            parentContainer.style.borderRadius = `${parentRadius}px`;
+            parentContainer.style.padding = `${padding}px`;
+            parentContainer.style.gap = `${padding}px`;
+            
+            // Apply styles to children
+            childElements.forEach(child => {
+                child.style.borderRadius = `${childRadius}px`;
+                child.setAttribute('data-radius', `r=${childRadius}px`);
+            });
+        }
+
+        // Event listeners
+        parentRadiusInput.addEventListener('input', updateStyles);
+        paddingInput.addEventListener('input', updateStyles);
+
+        // Initial update
+        updateStyles();
+    </script>
+</body>
+</html>
+
